@@ -1,0 +1,260 @@
+﻿<Window x:Class="mV3DViewer.GLSLShading"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:mV3DViewer" xmlns:dragablz="http://dragablz.net/winfx/xaml/dragablz"
+        xmlns:hwndhost="clr-namespace:CefSharp.Wpf.HwndHost;assembly=CefSharp.Wpf.HwndHost"
+        xmlns:cefSharp="clr-namespace:CefSharp.Wpf;assembly=CefSharp.Wpf"
+        mc:Ignorable="d"
+        Title="GLSLShading" Height="718" Width="1322"
+        WindowStyle="None"
+        ResizeMode="CanResizeWithGrip"
+        AllowsTransparency="True" Closing="Window_Closing" Loaded="Window_Loaded"
+        SizeChanged="Window_SizeChanged" KeyDown="Window_KeyDown">
+    <Window.Resources>
+        <Style x:Key="TransparentStyle" TargetType="{x:Type Button}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border>
+                            <Border.Style>
+                                <Style TargetType="{x:Type Border}">
+                                    <Style.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter Property="Background" Value="#454545"/>
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Border.Style>
+                            <Grid Background="Transparent">
+                                <ContentPresenter></ContentPresenter>
+                            </Grid>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="TabGLSL" TargetType='TabItem'>
+            <Setter Property='BorderThickness' Value='3'/>
+            <Setter Property='BorderBrush' Value='#3b3b3b'/>
+            <Setter Property='Background' Value='#2b2b2b'/>
+            <Setter Property='VerticalContentAlignment' Value='Center'/>
+            <Setter Property='HorizontalContentAlignment' Value='Center'/>
+            <Setter Property='Template'>
+                <Setter.Value>
+                    <ControlTemplate TargetType='{x:Type TabItem}'>
+                        <Border>
+                            <Grid>
+                                <Grid>
+                                    <Border CornerRadius='3,3,0,0' Background='{TemplateBinding Background}' 
+                   BorderBrush='{TemplateBinding BorderBrush}' 
+                   BorderThickness='{TemplateBinding BorderThickness}'/>
+                                </Grid>
+                                <Border BorderThickness='{TemplateBinding BorderThickness}' 
+                 Padding='{TemplateBinding Padding}'>
+                                    <ContentPresenter ContentSource='Header' 
+                 HorizontalAlignment='{TemplateBinding HorizontalContentAlignment}' 
+                 VerticalAlignment='{TemplateBinding VerticalContentAlignment}'/>
+                                </Border>
+                            </Grid>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style x:Key="txtBlock" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontFamily" Value="Consolas"/>
+            <Setter Property="FontSize" Value="15"/>
+        </Style>
+    </Window.Resources>
+    <Grid Background="#FF29292f" x:Name="glslWin">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="2*"/>
+            <ColumnDefinition Width="0.5*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="25"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="20"/>
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="2" Grid.ColumnSpan="3" Background="#FF007ACC">
+            <StackPanel Orientation="Horizontal">
+            <TextBlock x:Name="gpuUsage" HorizontalAlignment="Left" Margin="5,0,0,0" Foreground="White" FontFamily="Consolas" FontSize="15"
+                       Text="GPU: "/>
+                <Separator Height="Auto" Width="1" Margin="1,0" Background="Gray" Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}"/>
+                <TextBlock x:Name="charCountGolf" Visibility="Hidden" Text=" Char count:" Style="{DynamicResource txtBlock}"/>
+                <TextBlock x:Name="charNumCount" Visibility="Hidden" Style="{DynamicResource txtBlock}"/>
+            </StackPanel>
+        </Grid>
+        <GridSplitter Background="Gray" Width="3" Grid.Row="1" Grid.Column="0" DragCompleted="GridSplitter_DragCompleted"/>
+        <GridSplitter Background="Gray" Width="3" Grid.Row="1" Grid.Column="1" DragCompleted="GridSplitter_DragCompleted"/>
+        <!--<cefSharp:ChromiumWebBrowser x:Name="GLSLRender" BorderBrush="Black" BorderThickness="2,2,2,2" Background="Red" 
+                                     Margin="438,29,10,133"/>-->
+        <hwndhost:ChromiumWebBrowser x:Name="GLSLRender" Grid.Column="1" Grid.Row="1" Margin="2,29,5,130"/>
+        <WebBrowser x:Name="musicRender" Grid.Column="1" VerticalAlignment="Top" HorizontalAlignment="Left" Width="1" Height="1"/>
+        <Button x:Name="pauseBtn" Grid.Row="1" Grid.Column="1" Margin="0,5,10,0" Background="Transparent" VerticalAlignment="Top"
+                HorizontalAlignment="Right" Height="20" Foreground="White" FontWeight="ExtraBold" FontSize="9" Click="pauseBtn_Click">
+            <Grid>
+                <Image x:Name="pauseUnpauseTimer" Source="Assets/Extras/pause.png"/>
+            </Grid>
+            <Button.ToolTip>
+                <ToolTip x:Name="psTT" Content="Pause"/>
+            </Button.ToolTip>
+        </Button>
+        <Button Grid.Row="1" Grid.Column="1" VerticalAlignment="Top" Height="20" Click="Button_Click_1"
+                HorizontalAlignment="Left" Background="Transparent" Margin="5,5" Width="45">
+            <Grid>
+                <Image Source="Assets/Extras/clearport.png"/>
+            </Grid>
+            <Button.ToolTip>
+                <ToolTip Content="Clear Viewport"/>
+            </Button.ToolTip>
+        </Button>
+        <Button x:Name="flScr" Grid.Row="1" Grid.Column="1" Margin="0,5,66,0" Background="Transparent" VerticalAlignment="Top"
+                HorizontalAlignment="Right" Height="20" Foreground="White" FontWeight="ExtraBold" FontSize="9" Click="flScr_Click">
+            <Grid>
+                <Image Source="Assets/fullscreen.png"/>
+            </Grid>
+            <Button.ToolTip>
+                <ToolTip Content="Fullscreen"/>
+            </Button.ToolTip>
+        </Button>
+        <dragablz:TabablzControl Grid.Column="0" Grid.Row="1" x:Name="dragableTab" Margin="5,35,3,10" Background="#242424" Style="{DynamicResource MaterialDesignAlternateTabablzControlStyle}" 
+                                 Width="Auto" FontFamily="Consolas">
+            <TabItem Header="Vertex" IsSelected="True">
+                <Grid>
+                    <avalonEdit:TextEditor
+                    Background="#333333"
+                    Foreground="White"
+                    xmlns:avalonEdit="http://icsharpcode.net/sharpdevelop/avalonedit"
+                    ShowLineNumbers="True"
+                    x:Name="vertexCode"
+                    SyntaxHighlighting="Java"
+                    FontFamily="Consolas"
+                    Width="Auto"
+                    FontSize="10pt" Margin="0,2,0,0"/>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Fragment" IsSelected="True" Margin="0,0,0,0">
+                <Grid>
+                    <avalonEdit:TextEditor
+                    Background="#333333"
+                    Foreground="White"
+                    xmlns:avalonEdit="http://icsharpcode.net/sharpdevelop/avalonedit"
+                    x:Name="fragmentCode"
+                    ShowLineNumbers="True"
+                    FontFamily="Consolas" KeyDown="fragmentCode_KeyDown"
+                    Width="Auto" Height="Auto" TextChanged="fragmentCode_TextChanged"
+                    FontSize="10pt" Margin="0,2,0,0">
+                        <avalonEdit:TextEditor.ContextMenu>
+                            <ContextMenu>
+                                <MenuItem Header="Cut" Click="cutTxtBox_Click"/>
+                                <MenuItem Header="Copy" Click="copyTxtBox_Click"/>
+                                <MenuItem Header="Paste" Click="MenuItem_Click_8"/>
+                                <MenuItem Header="Delete" Click="deleteTxtBox_Click"/>
+                                <MenuItem Header="Select All" Click="selectAllTxtBox_Click"/>
+                            </ContextMenu>
+                        </avalonEdit:TextEditor.ContextMenu>
+                    </avalonEdit:TextEditor>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Textures" IsSelected="True" Margin="0,0,0,0">
+                <Grid Background="#3a3a3a">
+                    <ScrollViewer HorizontalScrollBarVisibility="Auto"
+                                  VerticalScrollBarVisibility="Auto" VerticalAlignment="Top">
+                        <ListView x:Name="texturesStack" VerticalAlignment="Top" Background="Red" Margin="0,3,0,0"/>
+                    </ScrollViewer>
+                </Grid>
+            </TabItem>
+        </dragablz:TabablzControl>
+        <Button Margin="0,5,5,0" HorizontalAlignment="Right" FontFamily="Consolas" Height="22" FontSize="12" Grid.Row="1"
+                            VerticalAlignment="Top" Background="Transparent"
+                            Click="Button_Click" Width="89">
+            <Grid>
+                <Image HorizontalAlignment="Left" Source="Assets/play.png" Width="13" Margin="-13,0,0,0"/>
+                <TextBlock Padding="20,0,0,0" Text="Compile" HorizontalAlignment="Right" Margin="-16,0,-14,0"/>
+            </Grid>
+        </Button>
+        <Menu x:Name="menu" HorizontalAlignment="Left" Height="22" Margin="5,5,0,0" Background="#2f3030" Grid.Row="1"
+              Grid.RowSpan="2" VerticalAlignment="Top" Width="210">
+            <MenuItem Header="_File" FontFamily="Consolas" Margin="0,-15,0,0">
+                <MenuItem Header="_New" Click="MenuItem_Click_5"/>
+                <MenuItem Header="_Open" Click="MenuItem_Click_4"/>
+                <Separator/>
+                <MenuItem Header="_Save" Click="MenuItem_Click_1"/>
+                <MenuItem Header="_Save As" Click="MenuItem_Click_2"/>
+                <Separator/>
+                <MenuItem Header="_Close" Click="MenuItem_Click"/>
+            </MenuItem>
+            <MenuItem Header="_Edit" FontFamily="Consolas" VerticalAlignment="Top" Margin="0,-15,0,0">
+                <MenuItem Header="Show Line Numbers" Click="MenuItem_Click_3"/>
+                <MenuItem x:Name="autoComptxt" Header="Disable Autocomplete" Click="MenuItem_Click_6"/>
+                <MenuItem x:Name="inlineCommands" Header="Disable tag commands" Click="inlineCommands_Click"/>
+                <MenuItem x:Name="wordWrap" IsCheckable="True" Header="Word wrap" Click="wordWrap_Click"/>
+                <Separator/>
+                <MenuItem x:Name="genVertButton" Header="Generate Vertex template" Click="genVertButton_Click"/>
+                <MenuItem x:Name="codeGolf" Header="Code golf" IsCheckable="True" Click="codeGolf_Click"/>
+            </MenuItem>
+            <MenuItem Header="_Other" FontFamily="Consolas" VerticalAlignment="Top" Margin="0,-15,0,0">
+                <MenuItem Header="Set as wallpaper" Click="MenuItem_Click_7"/>
+                <MenuItem x:Name="isMusicLooped" IsCheckable="True" Header="Loop Background music" Click="isMusicLooped_Click"/>
+            </MenuItem>
+        </Menu>
+        <Grid x:Name="glslTitle" MouseDown="glslTitle_MouseDown" VerticalAlignment="Top" Height="22" Background="#4e4f52" Grid.ColumnSpan="3" Grid.RowSpan="2" HorizontalAlignment="Stretch">
+            <Image x:Name="image" HorizontalAlignment="Left" Height="22" Margin="10,0,0,0" VerticalAlignment="Top" Width="26" Source="Assets/glslfile.png"/>
+            <Button x:Name="btnClose" Grid.ColumnSpan="2" Background="Transparent" Foreground="White" Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Top" Width="44" Height="22" Click="btnClose_Click" FontSize="10" BorderThickness="0,0,0,0" Style="{StaticResource TransparentStyle}">
+                <Button.ToolTip>
+                    <ToolTip x:Name="tt_close" Content="Close"/>
+                </Button.ToolTip>
+                <Button.Content>
+                    <Grid Margin="0 0 0 0">
+                        <Path Data="M0,7 L10,17 M0,17 L10,7" Stroke="White" StrokeThickness="2" HorizontalAlignment="Center" Stretch="None" />
+                    </Grid>
+                </Button.Content>
+            </Button>
+            <Button x:Name="minBtn" Grid.Column="1" HorizontalAlignment="Right" Margin="0,0,90,0" VerticalAlignment="Top" Width="44" Height="22" Background="Transparent" Foreground="White"
+                    BorderThickness="0,0,0,0" Click="minBtn_Click" Style="{StaticResource TransparentStyle}">
+                <Button.Content>
+                    <Path Data="M0.2777243,2.99998 L8.2227571,2.99998 M1.7222757,4.66663" Stroke="White" StrokeThickness="2" HorizontalAlignment="Center" Stretch="None" Margin="16,11.667,19.499,1.667" Width="8.501"/>
+                </Button.Content>
+                <Button.ToolTip>
+                    <ToolTip Content="Minimize"/>
+                </Button.ToolTip>
+            </Button>
+            <Button x:Name="maximumMin1" Grid.Column="1" HorizontalAlignment="Right" Margin="0,0,45,0" VerticalAlignment="Top" Width="44" Height="22" Background="Transparent" Foreground="White"
+                BorderThickness="0,0,0,0" Content="🗖" Click="maximumMin1_Click" Padding="1,0"/>
+            <Label x:Name="label" HorizontalAlignment="Left" Margin="35,1,0,0" VerticalAlignment="Top">
+                <Label x:Name="label1" FontFamily="Consolas" Content="ShadeD" Height="17" Width="855" Margin="0,-2,0,0"
+                       VerticalAlignment="Top" Padding="1,-1" HorizontalAlignment="Left" MouseDown="label1_MouseDown"/>
+            </Label>
+        </Grid>
+
+        <TreeView x:Name="treeView" SelectedItemChanged="treeView_SelectedItemChanged"
+                  Grid.Row="1" Grid.Column="3" Background="#3a3a3a" Margin="2,2,5,5"/>
+        <TabControl x:Name="tabGLSL" HorizontalAlignment="Stretch" Grid.Row="1" Grid.Column="1" Height="118" Margin="3,0,12,5" VerticalAlignment="Bottom" 
+                    Width="Auto" 
+                    Background="#3d3d3d" SelectionChanged="tabGLSL_SelectionChanged"
+                    BorderThickness="0,0,0,0">
+            <TabItem Style="{StaticResource TabGLSL}" Foreground="White" x:Name="consoleTab"
+                     Header="Console">
+                <TextBox x:Name="glslConsole" HorizontalAlignment="Stretch" Grid.RowSpan="2" VerticalAlignment="Bottom" Width="865" Height="80" Grid.ColumnSpan="3" Background="Black"
+                 FontFamily="Consolas" PreviewKeyDown="glslConsole_PreviewKeyDown"
+                 Foreground="White"
+                 TextWrapping="Wrap"
+                 FontWeight="Bold" VerticalScrollBarVisibility="Visible" KeyDown="TextBox_KeyDown" RenderTransformOrigin="0.5,0.5"/>
+            </TabItem>
+            <TabItem Header="Error log" x:Name="errorTab"
+                     Foreground="White" Style="{StaticResource TabGLSL}">
+                <TextBox x:Name="errorLog" HorizontalAlignment="Left" VerticalAlignment="Stretch" Height="85" Width="864" Background="Black"
+                 FontFamily="Consolas"
+                 Foreground="#ff0000"
+                 TextWrapping="Wrap"
+                 FontWeight="Bold" VerticalScrollBarVisibility="Visible" RenderTransformOrigin="0.5,0.5" IsReadOnly="True"/>
+            </TabItem>
+        </TabControl>
+    </Grid>
+</Window>

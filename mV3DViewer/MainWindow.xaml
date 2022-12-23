@@ -1,0 +1,710 @@
+﻿<Window x:Class="mV3DViewer.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:helix="http://helix-toolkit.org/wpf"
+        xmlns:dragablz="clr-namespace:Dragablz;assembly=Dragablz"
+        xmlns:local1="clr-namespace:WPFSurfacePlot3D"
+        xmlns:ExtendedToolkit="http://schemas.xceed.com/wpf/xaml/toolkit"
+        Title="mV3DViewer" Height="830.817" Width="1569.818"
+        Icon="Assets/logo3d.ico"
+        WindowStyle="None"
+        ResizeMode="CanResizeWithGrip"
+        AllowsTransparency="True"
+        SizeChanged="Window_SizeChanged">
+
+    <WindowChrome.WindowChrome>
+        <WindowChrome 
+        CaptionHeight="0"
+        ResizeBorderThickness="5"/>
+    </WindowChrome.WindowChrome>
+
+    <Window.Resources>
+        <ImageBrush x:Key="tb_mouse_over" ImageSource="Assets/mnuhov.PNG"/>
+        <Style x:Key="font_style" TargetType="TextBlock">
+            <Setter Property="FontFamily" Value="Consolas"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="HorizontalAlignment" Value="Left"/>
+            <Setter Property="Foreground" Value="White"/>
+        </Style>
+
+        <Style TargetType="ToolTip" x:Key="tt_style">
+            <Setter Property="Placement" Value="Right"/>
+            <Setter Property="Height" Value="40"/>
+            <Setter Property="Width" Value="100"/>
+            <Setter Property="Margin" Value="20,0,0,0"/>
+            <Setter Property="Background" Value="#4A5668"/>
+            <Setter Property="BorderBrush" Value="Transparent"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontFamily" Value="Consolas"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="PlacementRectangle" Value="60,0,0,0"/>
+            <Setter Property="HorizontalOffset" Value="15"/>
+            <Setter Property="VerticalOffset" Value="6"/>
+            <Setter Property="HasDropShadow" Value="True"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+
+        </Style>
+
+        <Style x:Key="tb_style" TargetType="{x:Type ToggleButton}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type ToggleButton}">
+                        <Border x:Name="border" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" SnapsToDevicePixels="True">
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" TargetName="border" Value="{StaticResource tb_mouse_over}"/>
+                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource tb_mouse_over}"/>
+                            </Trigger>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter Property="Background" TargetName="border" Value="{StaticResource tb_mouse_over}"/>
+                                <Setter Property="Background" TargetName="border" Value="{StaticResource tb_mouse_over}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="TransparentStyle" TargetType="{x:Type Button}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border>
+                            <Border.Style>
+                                <Style TargetType="{x:Type Border}">
+                                    <Style.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter Property="Background" Value="#454545"/>
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Border.Style>
+                            <Grid Background="Transparent">
+                                <ContentPresenter></ContentPresenter>
+                            </Grid>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="MyScrollBarStyle" TargetType="{x:Type ScrollBar}">
+            <Setter Property="Background" Value="#3b3b3b"/>
+            <Setter Property="BorderBrush" Value="Transparent"/>
+            <Style.Triggers>
+                <Trigger Property="Orientation" Value="Vertical">
+                    <Setter Property="Width" Value="5"/>
+                    <Setter Property="Height" Value="Auto" />
+
+                </Trigger>
+                <Trigger Property="Orientation" Value="Horizontal">
+                    <Setter Property="Width" Value="Auto"/>
+                    <Setter Property="Height" Value="5" />
+
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
+
+    <Grid x:Name="bg_setting" Background="#FF292929">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="0*"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="736*"/>
+            <ColumnDefinition Width="183*"/>
+            <ColumnDefinition Width="335*"/>
+        </Grid.ColumnDefinitions>
+        <helix:HelixViewport3D x:Name="viewPort3d" MouseDown="viewPort3d_MouseDown" ZoomExtentsWhenLoaded="true" Margin="424,66,48,167" Background="AntiqueWhite" Grid.ColumnSpan="3" Grid.Row="1" BorderThickness="3,3,3,3" BorderBrush="Black" ShowFrameRate="True" 
+                               KeyDown="viewPort3d_KeyDown"
+                               ShowCameraInfo="False" 
+                               FontFamily="Consolas" 
+                               InfoBackground="Transparent"
+                               AllowDrop="True"
+                               ShowCoordinateSystem="True" Drop="viewPort3d_Drop">
+            <!-- Remember to add light to the scene -->
+            <!--<helix:CuttingPlaneGroup x:Name="cuttingGroup1">
+                <helix:CuttingPlaneGroup.CuttingPlanes>
+                    <helix:Plane3D Normal="0,-0.3,0"/>
+                    <helix:Plane3D Normal="2,-1,0.1"/>
+                </helix:CuttingPlaneGroup.CuttingPlanes>
+                <helix:SphereVisual3D Center="0,0,2" BackMaterial="{helix:Material Blue}" Material="{helix:Material LightBlue}"/>
+                <helix:CubeVisual3D Center="0.2,0.1,0" SideLength="2" BackMaterial="{helix:Material Green}" Material="{helix:Material LightGreen}"/>
+                <helix:TruncatedConeVisual3D Origin="0.2,0.1,3" BackMaterial="{helix:Material Red}" Material="{helix:Material LightCoral}"/>
+            </helix:CuttingPlaneGroup>-->
+            <helix:DefaultLights/>
+        </helix:HelixViewport3D>
+        <StatusBar Background="#3e84c9" Grid.Row="1" VerticalAlignment="Bottom" Height="20" Grid.ColumnSpan="3" Margin="62,0,0,0">
+            <Label x:Name="lblcam" Height="21" Width="23" Margin="1,-5,0,0" Foreground="White" FontSize="10" Content="📷" RenderTransformOrigin="0.486,0.048"/>
+        </StatusBar>
+        <TextBlock Text="{Binding Camera.Position, ElementName=viewPort3d, StringFormat=Cam Pos: \{0:0.0\}}" Margin="90,0,0,0" Grid.RowSpan="2" Foreground="White" FontFamily="Consolas" FontSize="14" VerticalAlignment="Bottom" HorizontalAlignment="Left" Width="Auto" Height="20"/>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="25"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+        </Grid>
+        <Grid x:Name="titleGrid" VerticalAlignment="Top" Height="22"  Background="#4e4f52" Grid.ColumnSpan="3" Grid.RowSpan="2"  HorizontalAlignment="Stretch" MouseDown="titleGrid_MouseDown">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="448*"/>
+                <ColumnDefinition Width="447*"/>
+                <ColumnDefinition Width="12*"/>
+            </Grid.ColumnDefinitions>
+            <Label x:Name="label" Content="mV3DViewer" HorizontalAlignment="Left" Margin="75,-1,0,0" VerticalAlignment="Top" Height="23" Width="1307" FontFamily="Consolas" Foreground="White" Grid.ColumnSpan="2"/>
+            <Button x:Name="button" Grid.ColumnSpan="2" Background="Transparent" Foreground="White" Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Top" Width="44" Height="22" Click="button_Click" FontSize="10" BorderThickness="0,0,0,0" Style="{StaticResource TransparentStyle}">
+                <Button.ToolTip>
+                    <ToolTip x:Name="tt_close" Content="Close"/>
+                </Button.ToolTip>
+                <Button.Content>
+                    <Grid Margin="0 0 0 0">
+                        <Path Data="M0,7 L10,17 M0,17 L10,7" Stroke="White" StrokeThickness="2" HorizontalAlignment="Center" Stretch="None" />
+                    </Grid>
+                </Button.Content>
+            </Button>
+            <Button x:Name="button1" Grid.Column="1" HorizontalAlignment="Right" Margin="0,0,69,0" VerticalAlignment="Top" Width="44" Height="22" Background="Transparent" Foreground="White"
+                    BorderThickness="0,0,0,0" Click="button1_Click" Style="{StaticResource TransparentStyle}">
+                <Button.Content>
+                    <Path Data="M0.2777243,2.99998 L8.2227571,2.99998 M1.7222757,4.66663" Stroke="White" StrokeThickness="2" HorizontalAlignment="Center" Stretch="None" Margin="16,11.667,19.499,1.667" Width="8.501"/>
+                </Button.Content>
+                <Button.ToolTip>
+                    <ToolTip Content="Minimize"/>
+                </Button.ToolTip>
+            </Button>
+            <Button x:Name="maximumMin" Grid.Column="1" HorizontalAlignment="Right" Margin="0,0,24,0" VerticalAlignment="Top" Width="44" Height="22" Background="Transparent" Foreground="White"
+                BorderThickness="0,0,0,0" Content="🗖" Click="maximumMin_Click" Padding="1,0"/>
+        </Grid>
+        <Menu x:Name="menu" HorizontalAlignment="Left" Height="19" Margin="62,22,0,0" Grid.RowSpan="2" VerticalAlignment="Top" Width="145">
+            <MenuItem Header="_File" FontFamily="Consolas" VerticalAlignment="Top" Height="19">
+                <MenuItem Header="_New" Click="MenuItem_Click"/>
+                <MenuItem Header="_Open" Click="MenuItem_Click_1"/>
+                <MenuItem Header="_Open external model" />
+                <Separator/>
+                <MenuItem Header="_Save"/>
+                <MenuItem Header="_Save As"/>
+                <Separator/>
+                <MenuItem Header="_Close"/>
+            </MenuItem>
+            <MenuItem Header="_Edit" FontFamily="Consolas" VerticalAlignment="Top" Height="19">
+                <MenuItem Header="Gridlines" Click="MenuItem_Click_2"/>
+            </MenuItem>
+        </Menu>
+        <dragablz:TabablzControl HorizontalAlignment="Left" x:Name="dragableTab" Margin="67,60,0,25" Background="#242424" Grid.RowSpan="2" Style="{DynamicResource MaterialDesignAlternateTabablzControlStyle}" Width="352" FontFamily="Consolas">
+            <dragablz:TabablzControl.InterTabController>
+                <dragablz:InterTabController />
+            </dragablz:TabablzControl.InterTabController>
+            <TabItem Header="Object" IsSelected="True">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="3"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <GridSplitter Background="#8b8b8b" Grid.Row="1" HorizontalAlignment="Stretch"/>
+                    <TextBlock x:Name="selectedItmLbl" Foreground="White" HorizontalAlignment="Center" Margin="0,20,0,0">No item selected</TextBlock>
+                    <!--<DataGrid Name="gridSelected" HorizontalAlignment="Left" VerticalAlignment="Top" Height="Auto" Margin="5,40,5,365" Width="365" CanUserAddRows="False" IsReadOnly="True"></DataGrid>-->
+                    <ExtendedToolkit:PropertyGrid 
+                        x:Name="propertyGrid"
+                        Grid.Row="0"
+                        AutoGenerateProperties="True" 
+                        ShowSearchBox="True"
+                        IsCategorized="False"
+                        ShowSortOptions="True"
+                        ShowSummary="False"
+                        ShowTitle="False"
+                        UpdateTextBoxSourceOnEnterKey="True"
+                        IsReadOnly="False"
+                        FontFamily="Consolas"
+                        Margin="0,40,0,0"
+                        Height="Auto"
+                        BorderThickness="0,0,0,0"
+                        ShowHorizontalScrollBar="True" 
+                        HorizontalContentAlignment="Center" 
+                        VerticalContentAlignment="Top">
+                        <ExtendedToolkit:PropertyGrid.AdvancedOptionsMenu>
+                            <ContextMenu>
+                                <MenuItem Name="miCopyProperty" Header="Copy"/>
+                            </ContextMenu>
+                        </ExtendedToolkit:PropertyGrid.AdvancedOptionsMenu>
+                        <ExtendedToolkit:PropertyGrid.Resources>
+                            <Style TargetType="{x:Type ExtendedToolkit:PropertyItemsControl}">
+                                <Setter Property="FontWeight" Value="Bold"/>
+                                <Setter Property="Foreground" Value="Red"/>
+                            </Style>
+                            <Style TargetType="{x:Type ExtendedToolkit:PropertyGrid}">
+                                <Setter Property="Background" Value="#363636"/>
+                            </Style>
+                        </ExtendedToolkit:PropertyGrid.Resources>
+                    </ExtendedToolkit:PropertyGrid>
+                    <!--<Separator Margin="10,0,10,0" VerticalAlignment="Stretch"/>-->
+                    <TextBlock Grid.Row="2" Text="Create Object" Foreground="White" VerticalAlignment="Top" HorizontalAlignment="Center" Height="Auto" Margin="0,0,0,0"/>
+                    <ScrollViewer Height="Auto" Width="Auto" HorizontalScrollBarVisibility="Auto" Grid.Row="2" VerticalScrollBarVisibility="Auto" VerticalAlignment="Center">
+                        <ListView x:Name="MeshObjectList" Margin="0,20,0,0" Height="Auto" Width="Auto">
+                            <ListViewItem Background="#3a3a3a" Margin="10,0,10,0">
+                                <StackPanel Orientation="Horizontal">
+                                    <Image Source="Resources/cube3d.png" Height="65" Width="100"/>
+                                    <TextBlock Margin="0,25,0,0" FontSize="15" Text=" Cube"/>
+                                </StackPanel>
+                            </ListViewItem>
+                            <ListViewItem Background="#3a3a3a" Margin="10,0,10,0">
+                                <StackPanel Orientation="Horizontal">
+                                    <Image Source="Resources/sphere3d.png" Height="65" Width="100"/>
+                                    <TextBlock Margin="0,25,0,0" FontSize="15" Text=" Sphere"/>
+                                </StackPanel>
+                            </ListViewItem>
+                            <ListViewItem Background="#3a3a3a" Margin="10,0,10,0">
+                                <StackPanel Orientation="Horizontal">
+                                    <Image Source="Resources/ellipsoid3d.png" Height="65" Width="100"/>
+                                    <TextBlock Margin="0,25,0,0" FontSize="15" Text=" Ellipsoid"/>
+                                </StackPanel>
+                            </ListViewItem>
+                            <ListViewItem Background="#3a3a3a" Margin="10,0,10,0">
+                                <StackPanel Orientation="Horizontal">
+                                    <Image Source="Resources/cylinder3d.png" Height="65" Width="100"/>
+                                    <TextBlock Margin="0,25,0,0" FontSize="15" Text=" Cylinder"/>
+                                </StackPanel>
+                            </ListViewItem>
+                            <ListViewItem Background="#3a3a3a" Margin="10,0,10,0">
+                                <StackPanel Orientation="Horizontal">
+                                    <Image Source="Resources/cone3d.png" Height="65" Width="100"/>
+                                    <TextBlock Margin="0,25,0,0" FontSize="15" Text=" Cone"/>
+                                </StackPanel>
+                            </ListViewItem>
+                            <ListViewItem Background="#3a3a3a" Margin="10,0,10,0">
+                                <StackPanel Orientation="Horizontal">
+                                    <Image Source="Resources/torus3d.png" Height="65" Width="100"/>
+                                    <TextBlock Margin="0,25,0,0" FontSize="15" Text=" Torus"/>
+                                </StackPanel>
+                            </ListViewItem>
+                            <ListViewItem Background="#3a3a3a" Margin="10,0,10,0">
+                                <StackPanel Orientation="Horizontal">
+                                    <Image Source="Resources/text3d.png" Height="65" Width="100"/>
+                                    <TextBlock Margin="0,25,0,0" FontSize="15" Text=" Text"/>
+                                </StackPanel>
+                            </ListViewItem>
+                            <ListView.ItemContainerStyle>
+                                <Style TargetType="ListViewItem">
+                                    <EventSetter Event="PreviewMouseLeftButtonDown" Handler="ListViewItem_PreviewMouseLeftButtonDown"/>
+                                </Style>
+                            </ListView.ItemContainerStyle>
+                        </ListView>
+                    </ScrollViewer>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Textures">
+                <Grid>
+                    <TextBlock x:Name="selectedTxture" Foreground="White" Margin="10,0,0,0" FontFamily="Consolas">Selected Texture: None</TextBlock>
+                    <ListView Margin="0,25,0,0" FontFamily="Consolas" FontSize="20">
+                        <Separator/>
+                        <ListViewItem MouseDoubleClick="ListViewItem_MouseDoubleClick_4">
+                            <StackPanel Orientation="Horizontal">
+                                <Image Source="Textures/bricktexture.jpg" Height="32" Width="32"/>
+                                <TextBlock Text=" Bricks"/>
+                            </StackPanel>
+                        </ListViewItem>
+                        <ListViewItem MouseDoubleClick="ListViewItem_MouseDoubleClick_5">
+                            <StackPanel Orientation="Horizontal">
+                                <Image Source="Textures/papertexture.jpg" Height="32" Width="32"/>
+                                <TextBlock Text=" Paper"/>
+                            </StackPanel>
+                        </ListViewItem>
+                        <ListViewItem MouseDoubleClick="ListViewItem_MouseDoubleClick_6">
+                            <StackPanel Orientation="Horizontal">
+                                <Image Source="Textures/marbletexture.jpg" Height="32" Width="32"/>
+                                <TextBlock Text=" Marble"/>
+                            </StackPanel>
+                        </ListViewItem>
+                        <ListViewItem MouseDoubleClick="ListViewItem_MouseDoubleClick_7">
+                            <StackPanel Orientation="Horizontal">
+                                <Image Source="Textures/woodtexture.jpg" Height="32" Width="32"/>
+                                <TextBlock Text=" Wood"/>
+                            </StackPanel>
+                        </ListViewItem>
+                        <Separator/>
+                        <ListViewItem MouseDoubleClick="ListViewItem_MouseDoubleClick_8">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="Transparent"/>
+                            </StackPanel>
+                        </ListViewItem>
+                    </ListView>
+                </Grid>
+            </TabItem>
+            <TabItem Header="mV3D Scripter">
+                <Grid>
+                    <TextBlock x:Name="filemVComp" FontFamily="Consolas" Foreground="White" Text="File:" Margin="0,10,0,0"/>
+                    <!--<TextBox x:Name="codeComp" Foreground="White" Width="320" Height="Auto" Background="Black" AcceptsReturn="True" Margin="0,35,0,40"/>-->
+                    <avalonEdit:TextEditor
+                    Background="#333333"
+                    Foreground="White"
+                    xmlns:avalonEdit="http://icsharpcode.net/sharpdevelop/avalonedit"
+                    x:Name="codeComp"
+                    ShowLineNumbers="True"
+                    SyntaxHighlighting="JavaScript"
+                    FontFamily="Consolas"
+                    Width="320" Height="Auto"
+                    FontSize="10pt" Margin="0,35,0,40"/>
+                    <Grid VerticalAlignment="Bottom" Width="Auto" Height="25" Background="#4b4b4b">
+                        <Button x:Name="codeExec"  Margin="5,0,0,0"  HorizontalAlignment="Left" Content="Execute" Height="Auto" Click="codeExec_Click"/>
+                        <Button x:Name="loadmV3dFile"  Margin="98,0,0,0"  HorizontalAlignment="Left" Content="Load File" Height="Auto" Click="loadmV3dFile_Click" Background="Transparent"/>
+                        <Button x:Name="savemV3dFile"  Margin="206,0,0,0"  HorizontalAlignment="Left" Content="Save File" Height="Auto" Click="savemV3dFile_Click" Background="Transparent"/>
+                        <Button x:Name="codeExec_2"  Margin="314,0,0,0" Width="20" HorizontalAlignment="Left" Height="Auto" Click="codeExec_2_Click" Background="Transparent"/>
+                    </Grid>
+                </Grid>
+            </TabItem>
+            <TabItem Header="3D Grapher">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="3"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <GridSplitter Grid.Row="1" Background="#6b6b6b" HorizontalAlignment="Stretch"/>
+                    <helix:HelixViewport3D 
+            x:Name="hViewport" 
+            Grid.Row="0" 
+            ZoomExtentsWhenLoaded="True" 
+            PanGesture="LeftClick" 
+            ShowViewCube="False"
+             Background="Wheat"
+                        
+                        ShowFrameRate="True"
+                        InfoBackground="Transparent"
+            ShowCoordinateSystem="{Binding ShowMiniCoordinates, UpdateSourceTrigger=PropertyChanged}" 
+            CoordinateSystemLabelX="{Binding XAxisLabel, UpdateSourceTrigger=PropertyChanged}" 
+            CoordinateSystemLabelY="{Binding YAxisLabel, UpdateSourceTrigger=PropertyChanged}" 
+            CoordinateSystemLabelZ="{Binding ZAxisLabel, UpdateSourceTrigger=PropertyChanged}" 
+            MouseDown="hViewport_MouseDown">
+                        <helix:HelixViewport3D.Camera>
+                            <PerspectiveCamera LookDirection="1,1,-1" UpDirection="0,0,1"/>
+                        </helix:HelixViewport3D.Camera>
+
+                        <!-- Lights -->
+                        <ModelVisual3D Content="{Binding Lights, UpdateSourceTrigger=PropertyChanged}"/>
+
+                        <!-- The plot visual (surface, axes and labels) -->
+                        <local1:SurfacePlotVisual3D 
+                DataPoints="{Binding DataPoints, UpdateSourceTrigger=PropertyChanged}" 
+                ColorValues="{Binding ColorValues, UpdateSourceTrigger=PropertyChanged}" 
+                SurfaceBrush="{Binding SurfaceBrush, UpdateSourceTrigger=PropertyChanged}" 
+                />
+                    </helix:HelixViewport3D>
+                    <TextBox x:Name="plotTxtBox" PreviewMouseDown="plotTxtBox_PreviewMouseDown" Foreground="White" Background="Black" Margin="0,0,0,37"
+                             FontFamily="Consolas" Grid.Row="2"
+                             KeyDown="plotTxtBox_KeyDown" 
+                             Focusable="True"
+                             VerticalScrollBarVisibility="Auto">
+                        <TextBox.ToolTip>
+                            <ToolTip Content="3D Plotter"/>
+                        </TextBox.ToolTip>
+                    </TextBox>
+                    <Button x:Name="btnPlot" Margin="0,0,0,0" Content="Execute" Grid.Row="2" VerticalAlignment="Bottom"
+                            HorizontalAlignment="Left" Click="btnPlot_Click" FontFamily="Consolas"/>
+                    <Button x:Name="btnPlotSave" Margin="100,0,0,0" VerticalAlignment="Bottom" Grid.Row="2"
+                            Content="Save as" HorizontalAlignment="Left" FontFamily="Consolas" Background="Transparent" Click="btnPlotSave_Click"/>
+                </Grid>
+            </TabItem>
+        </dragablz:TabablzControl>
+
+        <Grid Grid.Column="1" Background="#404040" HorizontalAlignment="Right" Height="24" Margin="0,45,50,0" Grid.RowSpan="2" VerticalAlignment="Top" Width="417" RenderTransformOrigin="0.5,0.5" Grid.ColumnSpan="2">
+            <Grid.RenderTransform>
+                <TransformGroup >
+                    <ScaleTransform ScaleY="-1" ScaleX="-1"/>
+                    <SkewTransform/>
+                    <RotateTransform/>
+                    <TranslateTransform/>
+                </TransformGroup>
+            </Grid.RenderTransform>
+            <Label x:Name="fileNamelbl" Content="" HorizontalAlignment="Left" Margin="1,-3,0,-1" VerticalAlignment="Top" Height="28" RenderTransformOrigin="0.5,0.5" Width="416" Foreground="White" FontFamily="Consolas" FontSize="14">
+                <Label.RenderTransform>
+                    <TransformGroup>
+                        <ScaleTransform ScaleY="-1" ScaleX="-1"/>
+                        <SkewTransform/>
+                        <RotateTransform/>
+                        <TranslateTransform/>
+                    </TransformGroup>
+                </Label.RenderTransform>
+            </Label>
+        </Grid>
+        <Image x:Name="image" HorizontalAlignment="Left" Height="35" Margin="3,5,0,0" Grid.RowSpan="2" VerticalAlignment="Top" Width="59" Source="logo3d.PNG" Stretch="Uniform"/>
+        <Grid x:Name="nav_pnl" HorizontalAlignment="Left" Height="Auto" Margin="0,22,0,0" Grid.RowSpan="2" Width="62" Background="#3b3b3b">
+            <StackPanel x:Name="st_Pnl">
+                <Grid Height="90">
+                    <TextBlock Grid.Row="1" 
+                               Grid.Column="0"
+                               Margin="73,-20,0,0"
+                               Text="O P T I O N S"
+                               Foreground="White"
+                               FontFamily="Consolas"
+                               FontSize="18"
+                               Background="Transparent"
+                               HorizontalAlignment="Left"
+                               VerticalAlignment="Center"
+                               Style="{StaticResource font_style}">
+                        <TextBlock.Effect>
+                            <DropShadowEffect BlurRadius="10" ShadowDepth="1" Direction="-90" Color="White"/>
+                        </TextBlock.Effect>
+                    </TextBlock>
+                    <ToggleButton x:Name="tg_btn"
+                                  Grid.Column="0"
+                                  VerticalAlignment="Center"
+                                  HorizontalAlignment="Left"
+                                  Margin="10,17,0,29"
+                                  Height="44"
+                                  Width="42"
+                                  BorderThickness="0"
+                                  Style="{StaticResource tb_style}" Unchecked="tg_btn_Unchecked" Checked="tg_btn_Checked">
+                        <ToggleButton.Background>
+                            <ImageBrush ImageSource="menutabimg.PNG"
+                                        Stretch="Uniform"></ImageBrush>
+                        </ToggleButton.Background>
+
+                        <ToggleButton.Triggers>
+                            <EventTrigger RoutedEvent="ToggleButton.Unchecked">
+                                <BeginStoryboard>
+                                    <Storyboard x:Name="hideStackPanel">
+                                        <DoubleAnimation Storyboard.TargetName="nav_pnl" Storyboard.TargetProperty="Width" BeginTime="0:0:0" From="230" To="65" Duration="0:0:0.2">
+                                        </DoubleAnimation>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+
+                            <EventTrigger RoutedEvent="ToggleButton.Checked">
+                                <BeginStoryboard>
+                                    <Storyboard x:Name="ShowStackPanel">
+                                        <DoubleAnimation Storyboard.TargetName="nav_pnl" Storyboard.TargetProperty="Width" BeginTime="0:0:0" From="65" To="230" Duration="0:0:0.3">
+
+                                        </DoubleAnimation>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+
+                        </ToggleButton.Triggers>
+
+                    </ToggleButton>
+
+                </Grid>
+
+                <!--// ListView with menu list items//-->
+                <ListView x:Name="LV"
+                          Background="Transparent"
+                          BorderBrush="Transparent"
+                          ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                    <ListViewItem HorizontalAlignment="Left"
+                                  Margin="0,0,0,15" MouseDoubleClick="ListViewItem_MouseDoubleClick" MouseEnter="ListViewItem_MouseEnter"
+                                  >
+                        <StackPanel Orientation="Horizontal"
+                                    Width="230">
+                            <Image Source="Assets/foldericon.PNG"
+                                   Stretch="None"
+                                   Margin="1,0,0,0" Width="42" Height="48"/>
+                            <TextBlock Text="Open File"
+                                       Margin="25,6,0,0"
+                                       FontSize="17"
+                                       Style="{StaticResource font_style}"/>
+                        </StackPanel>
+                        <!--// Tooltip //-->
+                        <ListViewItem.ToolTip>
+                            <ToolTip x:Name="tt_folder"
+                                     Content="Select file"
+                                     Style="{StaticResource tt_style}"/>
+                        </ListViewItem.ToolTip>
+                    </ListViewItem>
+                    <Separator/>
+
+                    <ListViewItem HorizontalAlignment="Left"
+                                  Margin="0,0,0,15"  MouseEnter="ListViewItem_MouseEnter" MouseDoubleClick="ListViewItem_MouseDoubleClick_1">
+                        <StackPanel Orientation="Horizontal"
+                                    Width="230">
+                            <Image Source="Assets/newfile.png"
+                                   Stretch="None"
+                                   Margin="-1,-4,0,0" Width="48" Height="50"/>
+                            <TextBlock Text="New File"
+                                       Margin="20,6,0,0"
+                                       FontSize="17"
+                                       Style="{StaticResource font_style}"/>
+                        </StackPanel>
+                        <!--// Tooltip //-->
+                        <ListViewItem.ToolTip>
+                            <ToolTip x:Name="tt_newfile"
+                                     Content="New file"
+                                     Style="{StaticResource tt_style}"/>
+                        </ListViewItem.ToolTip>
+                    </ListViewItem>
+
+                    <ListViewItem HorizontalAlignment="Left"
+                                  Margin="0,0,0,15"  MouseEnter="ListViewItem_MouseEnter" MouseDoubleClick="ListViewItem_MouseDoubleClick_2">
+                        <StackPanel Orientation="Horizontal"
+                                    Width="230">
+                            <Image Source="Assets/saveasimg.PNG"
+                                   Stretch="None"
+                                   Margin="-1,-4,0,0" Width="48" Height="48"/>
+                            <TextBlock Text="Save As"
+                                       Margin="18,6,0,0"
+                                       FontSize="17"
+                                       Style="{StaticResource font_style}"/>
+                        </StackPanel>
+                        <!--// Tooltip //-->
+                        <ListViewItem.ToolTip>
+                            <ToolTip x:Name="tt_saveas"
+                                     Content="Save file as"
+                                     Style="{StaticResource tt_style}"/>
+                        </ListViewItem.ToolTip>
+                    </ListViewItem>
+
+
+                    <ListViewItem HorizontalAlignment="Left"
+                                  Margin="0,0,0,15"  MouseEnter="ListViewItem_MouseEnter" MouseDoubleClick="ListViewItem_MouseDoubleClick_3">
+                        <StackPanel Orientation="Horizontal"
+                                    Width="230">
+                            <Image Source="Assets/saveimg.png"
+                                   Stretch="None"
+                                   Margin="-1,-4,0,0" Width="48" Height="50"/>
+                            <TextBlock Text="Save"
+                                       Margin="20,6,0,0"
+                                       FontSize="17"
+                                       Style="{StaticResource font_style}"/>
+                        </StackPanel>
+                        <!--// Tooltip //-->
+                        <ListViewItem.ToolTip>
+                            <ToolTip x:Name="tt_save"
+                                     Content="Save file"
+                                     Style="{StaticResource tt_style}"/>
+                        </ListViewItem.ToolTip>
+                    </ListViewItem>
+
+                    <Separator/>
+
+                    <ListViewItem HorizontalAlignment="Left"
+                                  Margin="0,0,0,5"  MouseEnter="ListViewItem_MouseEnter" MouseDoubleClick="ListViewItem_MouseDoubleClick_9">
+                        <StackPanel Orientation="Horizontal"
+                                    Width="230">
+                            <Image Source="Assets/3d-model.png"
+                                   Stretch="None"
+                                   Margin="-1,-2,0,0" Width="52" Height="53"/>
+                            <TextBlock Text="Add model from file"
+                                       Margin="15,6,0,0"
+                                       FontSize="14"
+                                       Style="{StaticResource font_style}"/>
+                        </StackPanel>
+                        <!--// Tooltip //-->
+                        <ListViewItem.ToolTip>
+                            <ToolTip x:Name="tt_addmdl"
+                                     Content="Add Model"
+                                     Style="{StaticResource tt_style}"/>
+                        </ListViewItem.ToolTip>
+                    </ListViewItem>
+
+                    <ListViewItem HorizontalAlignment="Left"
+                                  Margin="0,5,0,0"  MouseEnter="ListViewItem_MouseEnter" MouseDoubleClick="ListViewItem_MouseDoubleClick_11">
+                        <StackPanel Orientation="Horizontal"
+                                    Width="230">
+                            <Image Source="Assets/3dmodel-cut.png"
+                                   Stretch="None"
+                                   Margin="-1,-2,0,0" Width="52" Height="53"/>
+                            <TextBlock Text="Cut mesh"
+                                       Margin="15,6,0,0"
+                                       FontSize="14"
+                                       Style="{StaticResource font_style}"/>
+                        </StackPanel>
+                        <!--// Tooltip //-->
+                        <ListViewItem.ToolTip>
+                            <ToolTip x:Name="tt_cutmdl"
+                                     Content="Add Model"
+                                     Style="{StaticResource tt_style}"/>
+                        </ListViewItem.ToolTip>
+                    </ListViewItem>
+
+                    <Separator/>
+                    <ListViewItem HorizontalAlignment="Left"
+                                  Margin="0,0,0,5"  MouseEnter="ListViewItem_MouseEnter" MouseDoubleClick="ListViewItem_MouseDoubleClick_10">
+                        <StackPanel Orientation="Horizontal"
+                                    Width="230">
+                            <Image Source="Assets/glslfile.png"
+                                   Stretch="None"
+                                   Margin="-1,-2,0,0" Width="52" Height="53"/>
+                            <TextBlock Text="ShadeD (GLSL)"
+                                       Margin="15,6,0,0"
+                                       FontSize="14"
+                                       Style="{StaticResource font_style}"/>
+                        </StackPanel>
+                        <!--// Tooltip //-->
+                        <ListViewItem.ToolTip>
+                            <ToolTip x:Name="tt_glsl"
+                                     Content="ShadeD"
+                                     Style="{StaticResource tt_style}"/>
+                        </ListViewItem.ToolTip>
+                    </ListViewItem>
+                    <ListViewItem HorizontalAlignment="Left"
+                                  VerticalAlignment="Bottom" Margin="0,60,0,15"
+                                  MouseDoubleClick="settingsMain_MouseDoubleClick" MouseEnter="ListViewItem_MouseEnter">
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Bottom"
+                                    Width="230">
+                            <Image Source="Assets/settings.png"
+                                   Stretch="None"
+                                   Margin="-1,0,0,0" Width="50" Height="50"/>
+                            <TextBlock Text="Settings"
+                                       Margin="20,6,0,0"
+                                       FontSize="17"
+                                       Style="{StaticResource font_style}"/>
+                        </StackPanel>
+                        <!--// Tooltip //-->
+                        <ListViewItem.ToolTip>
+                            <ToolTip x:Name="tt_settings"
+                                     Content="Settings"
+                                     Style="{StaticResource tt_style}"/>
+                        </ListViewItem.ToolTip>
+                    </ListViewItem>
+
+                    <ListView.ItemContainerStyle>
+                        <Style TargetType="ListViewItem">
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="{x:Type ListViewItem}">
+                                        <Border x:Name="Bd"
+                                                Height="50"
+                                                BorderBrush="{TemplateBinding BorderBrush}"
+                                                BorderThickness="{TemplateBinding BorderThickness}"
+                                                Background="{TemplateBinding Background}"
+                                                Padding="{TemplateBinding Padding}"
+                                                SnapsToDevicePixels="True">
+                                            <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                                              SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
+                                                              VerticalAlignment="{TemplateBinding VerticalAlignment}"/>
+                                        </Border>
+                                        <ControlTemplate.Triggers>
+                                            <MultiTrigger>
+                                                <MultiTrigger.Conditions>
+                                                    <Condition Property="IsMouseOver" Value="True"/>
+                                                </MultiTrigger.Conditions>
+                                                <Setter Property="Background" TargetName="Bd" Value="#404D5B"/>
+                                                <Setter Property="BorderBrush" TargetName="Bd" Value="#404D5B"/>
+                                            </MultiTrigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </ListView.ItemContainerStyle>
+                </ListView>
+            </StackPanel>
+            <Grid Background="#525252" VerticalAlignment="Bottom" Height="20"/>
+        </Grid>
+        <TextBox x:Name="textBox" HorizontalAlignment="Stretch" Height="140" Margin="423,0,49,24" Grid.RowSpan="2" Text="" VerticalAlignment="Bottom" Width="Auto" Grid.ColumnSpan="3" Background="Black"
+                 FontFamily="Consolas"
+                 Foreground="White"
+                 TextWrapping="Wrap"
+                 FontWeight="Bold" TextChanged="textBox_TextChanged" KeyDown="textBox_KeyDown" VerticalScrollBarVisibility="Visible" RenderTransformOrigin="0.5,0.5" MouseDoubleClick="textBox_MouseDoubleClick">
+
+            <TextBox.RenderTransform>
+                <TransformGroup>
+                    <ScaleTransform/>
+                    <SkewTransform AngleX="1.488"/>
+                    <RotateTransform/>
+                    <TranslateTransform X="1.974"/>
+                </TransformGroup>
+            </TextBox.RenderTransform>
+        </TextBox>
+        <Label x:Name="lblSelected" Content="Selected: " HorizontalAlignment="Left" Margin="432,74,0,0" Grid.RowSpan="2" VerticalAlignment="Top" Height="24" Width="298" FontFamily="Consolas" FontWeight="Bold" Foreground="Black"/>
+    </Grid>
+</Window>

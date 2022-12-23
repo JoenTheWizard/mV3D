@@ -1,0 +1,73 @@
+﻿<Window x:Class="mV3DViewer.CutMesh"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:mV3DViewer" xmlns:helix="http://helix-toolkit.org/wpf" xmlns:dragablz="http://dragablz.net/winfx/xaml/dragablz" xmlns:avalonEdit="http://icsharpcode.net/sharpdevelop/avalonedit"
+        mc:Ignorable="d"
+        Title="Cut Mesh" Height="450" Width="900" WindowStyle="None" Topmost="True"
+        AllowsTransparency="True" ResizeMode="NoResize">
+    <Window.Resources>
+        <Style x:Key="TransparentStyle" TargetType="{x:Type Button}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border>
+                            <Border.Style>
+                                <Style TargetType="{x:Type Border}">
+                                    <Style.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter Property="Background" Value="#454545"/>
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Border.Style>
+                            <Grid Background="Transparent">
+                                <ContentPresenter></ContentPresenter>
+                            </Grid>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+    <Grid Background="#FF29292f">
+        <dragablz:TabablzControl HorizontalAlignment="Left" x:Name="dragableTab" Margin="10,28,0,10" Background="#242424" Style="{DynamicResource MaterialDesignAlternateTabablzControlStyle}" Width="395" FontFamily="Consolas">
+            <TabItem Header="Planar cut" IsSelected="True">
+                <Grid>
+                    <TextBlock Foreground="White" Text="Normal Map:" Margin="20,15,0,0" VerticalAlignment="Top"/>
+                    <avalonEdit:TextEditor Margin="20,40,20,45" x:Name="normalMap"
+                                           Foreground="White" Background="#474747"
+                                           ShowLineNumbers="True"/>
+                    <Button x:Name="addToSceneBtn" Margin="0,0,10,10" FontFamily="Consolas" FontWeight="ExtraBold" HorizontalAlignment="Right" Content="Add to scene" Height="Auto" 
+                            VerticalAlignment="Bottom"
+                            Click="addToSceneBtn_Click"/>
+                    <Button x:Name="cutNorm" Margin="12,0,0,10" FontFamily="Consolas" FontWeight="ExtraBold" HorizontalAlignment="Left" Content="Cut" Height="Auto" 
+                            VerticalAlignment="Bottom"
+                            Click="cutNorm_Click"/>
+                </Grid>
+            </TabItem>
+        </dragablz:TabablzControl>
+        <helix:HelixViewport3D x:Name="MeshViewer" ZoomExtentsWhenLoaded="true" Margin="410,28,10,10" Background="AntiqueWhite" BorderThickness="3,3,3,3" BorderBrush="Black" ShowFrameRate="True" 
+                               FontFamily="Consolas" 
+                               ShowViewCube="False"
+                               InfoBackground="Transparent" 
+                               ShowCoordinateSystem="True">
+            <!-- Remember to add light to the scene -->
+            <helix:DefaultLights/>
+        </helix:HelixViewport3D>
+        <Grid Background="#4e4f52" VerticalAlignment="Top" Height="20">
+            <TextBlock x:Name="meshName" Foreground="White" FontFamily="Consolas" Margin="5,2,0,0" MouseDown="meshName_MouseDown"/>
+            <Button x:Name="btnClose" Background="Transparent" Foreground="White" Click="btnClose_Click" HorizontalAlignment="Right" VerticalAlignment="Top" Width="38" Height="17" FontSize="10" BorderThickness="0,0,0,0" Style="{StaticResource TransparentStyle}">
+                <Button.ToolTip>
+                    <ToolTip Content="Close"/>
+                </Button.ToolTip>
+                <Button.Content>
+                    <Grid RenderTransformOrigin="0.51,0.375">
+                        <Path Data="M0.15277778,5.8 L8.625,13.8 M0.15277778,13.8 L8.625,5.8" Stroke="White" StrokeThickness="2" HorizontalAlignment="Center" Stretch="None" Margin="13.75,0,14.625,0" Width="9.625" Height="14" VerticalAlignment="Top" />
+                    </Grid>
+                </Button.Content>
+            </Button>
+        </Grid>
+    </Grid>
+</Window>

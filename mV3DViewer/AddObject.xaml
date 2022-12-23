@@ -1,0 +1,138 @@
+﻿<Window x:Class="mV3DViewer.AddObject"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:mV3DViewer" xmlns:helix="http://helix-toolkit.org/wpf" xmlns:dragablz="http://dragablz.net/winfx/xaml/dragablz"
+        mc:Ignorable="d"
+        Title="Add Object" Height="450" Width="1000"
+        AllowsTransparency="True"
+        WindowStyle="None"
+        ResizeMode="NoResize"
+        Topmost="True">
+
+    <Window.Resources>
+        <Style x:Key="TransparentStyle" TargetType="{x:Type Button}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border>
+                            <Border.Style>
+                                <Style TargetType="{x:Type Border}">
+                                    <Style.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter Property="Background" Value="#454545"/>
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Border.Style>
+                            <Grid Background="Transparent">
+                                <ContentPresenter></ContentPresenter>
+                            </Grid>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <Grid Background="#FF29292f">
+        <helix:HelixViewport3D x:Name="MeshViewer" ZoomExtentsWhenLoaded="true" Margin="410,28,10,10" Background="AntiqueWhite" BorderThickness="3,3,3,3" BorderBrush="Black" ShowFrameRate="True" 
+                               FontFamily="Consolas" 
+                               ShowViewCube="False"
+                               InfoBackground="Transparent" 
+                               ShowCoordinateSystem="True">
+            <!-- Remember to add light to the scene -->
+            <helix:DefaultLights/>
+        </helix:HelixViewport3D>
+        <dragablz:TabablzControl HorizontalAlignment="Left" x:Name="dragableTab" Margin="10,28,0,10" Background="#242424" Style="{DynamicResource MaterialDesignAlternateTabablzControlStyle}" Width="395" FontFamily="Consolas">
+            <TabItem Header="Create Mesh" IsSelected="True">
+                <Grid>
+                    <TextBlock Foreground="White" Text="Name:" Margin="60,7,0,0" VerticalAlignment="Top"/>
+                    <TextBox KeyDown="meshName_KeyDown" x:Name="meshName" Background="Transparent" Foreground="Lime" Margin="96,0,96,0" VerticalAlignment="Top" TextChanged="meshName_TextChanged"/>
+                    <Grid Background="#2c2f33" Margin="10,30,10,256">
+                        <TextBlock Foreground="White" Text="Position" FontFamily="Consolas" FontWeight="ExtraBlack" Margin="0,15,0,0" 
+                                   VerticalAlignment="Top" 
+                                   HorizontalAlignment="Center" TextDecorations="Underline"/>
+                        <TextBlock Foreground="White" Text="X:" FontFamily="Consolas" FontWeight="ExtraBlack" Margin="20,45,0,0" 
+                                   VerticalAlignment="Top" 
+                                   HorizontalAlignment="Left"/>
+                        <TextBox x:Name="xPosTxt" PreviewKeyDown="xPosTxt_PreviewKeyDown" Margin="35,17,260,0" TextChanged="xPosTxt_TextChanged" Foreground="Lime" Background="Black" Height="20"/>
+                        <TextBlock Foreground="White" Text="Y:" FontFamily="Consolas" FontWeight="ExtraBlack" Margin="120,45,0,0" 
+                                   VerticalAlignment="Top"
+                                   HorizontalAlignment="Left"/>
+                        <TextBox x:Name="yPosTxt" PreviewKeyDown="yPosTxt_PreviewKeyDown"  Margin="138,40,155,23" TextChanged="xPosTxt_TextChanged" Foreground="Lime" Background="Black" Height="20"/>
+                        <TextBlock Foreground="White" Text="Z:" FontFamily="Consolas" FontWeight="ExtraBlack" Margin="233,44,0,0" 
+                                   VerticalAlignment="Top" 
+                                   HorizontalAlignment="Left"/>
+                        <TextBox x:Name="zPosTxt" PreviewKeyDown="zPosTxt_PreviewKeyDown" Margin="249,40,40,23" TextChanged="xPosTxt_TextChanged" Foreground="Lime" Background="Black" Height="20"/>
+                    </Grid>
+                    <Separator Margin="5,-95,5,0" Background="#2f2f2f"/>
+
+                        <!--<ListView x:Name="MeshObjectList" Margin="0,80,0,0" Height="150" Width="Auto">
+                        <ListViewItem Background="#2c2f33" Margin="10,0,5,0">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBox Margin="40,0,0,0" TextChanged="xPosTxt_TextChanged" Foreground="Lime" Background="Black" Height="20" Width="50"/>
+                            </StackPanel>
+                        </ListViewItem>
+                        --><!--<ListView.ItemContainerStyle>
+                                <Style TargetType="ListViewItem">
+                                    <EventSetter Event="PreviewMouseLeftButtonDown" Handler="ListViewItem_PreviewMouseLeftButtonDown"/>
+                                </Style>
+                            </ListView.ItemContainerStyle>--><!--
+                        </ListView>-->
+                    <Grid Height="160" Margin="10,81,0,0" Width="395">
+                        <DataGrid Name="propertyMenu" CanUserAddRows="False">
+                            <DataGrid.LayoutTransform>
+                                <TransformGroup>
+                                    <RotateTransform Angle="90"/>
+                                    <MatrixTransform Matrix="-1,0,0,1,0,0"/>
+                                </TransformGroup>
+                            </DataGrid.LayoutTransform>
+                            <DataGrid.ColumnHeaderStyle>
+                                <Style TargetType="{x:Type DataGridColumnHeader}" BasedOn="{StaticResource {x:Type DataGridColumnHeader}}">
+                                    <Setter Property="LayoutTransform">
+                                        <Setter.Value>
+                                            <TransformGroup>
+                                                <RotateTransform Angle="-90"/>
+                                                <ScaleTransform ScaleX="1" ScaleY="-1" />
+                                            </TransformGroup>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </DataGrid.ColumnHeaderStyle>
+                            <DataGrid.CellStyle>
+                                <Style TargetType="DataGridCell">
+                                    <Setter Property="LayoutTransform">
+                                        <Setter.Value>
+                                            <TransformGroup>
+                                                <RotateTransform Angle="-90"/>
+                                                <ScaleTransform ScaleX="1" ScaleY="-1" />
+                                            </TransformGroup>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </DataGrid.CellStyle>
+                        </DataGrid>
+                    </Grid>
+                    <Button x:Name="addToSceneBtn" Margin="12,0,0,10" FontFamily="Consolas" FontWeight="ExtraBold" HorizontalAlignment="Left" Content="Add to scene" Height="Auto" 
+                            VerticalAlignment="Bottom"
+                            Click="Button_Click"/>
+                </Grid>
+            </TabItem>
+        </dragablz:TabablzControl>
+        <Grid HorizontalAlignment="Left" Background="#4e4f52" Height="17" VerticalAlignment="Top" Width="1000" MouseDown="Grid_MouseDown">
+            <TextBlock x:Name="objTitle" HorizontalAlignment="Left" Foreground="White" Margin="10,0,0,0"/>
+        </Grid>
+        <Button x:Name="btnClose" Background="Transparent" Foreground="White" Click="btnClose_Click" HorizontalAlignment="Right" VerticalAlignment="Top" Width="38" Height="17" FontSize="10" BorderThickness="0,0,0,0" Style="{StaticResource TransparentStyle}">
+            <Button.ToolTip>
+                <ToolTip x:Name="tt_close" Content="Close"/>
+            </Button.ToolTip>
+            <Button.Content>
+                <Grid RenderTransformOrigin="0.51,0.375">
+                    <Path Data="M0.15277778,5.8 L8.625,13.8 M0.15277778,13.8 L8.625,5.8" Stroke="White" StrokeThickness="2" HorizontalAlignment="Center" Stretch="None" Margin="13.75,0,14.625,0" Width="9.625" Height="14" VerticalAlignment="Top" />
+                </Grid>
+            </Button.Content>
+        </Button>
+    </Grid>
+</Window>
