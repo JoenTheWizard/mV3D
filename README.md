@@ -1,6 +1,6 @@
 # mV3D
 
-This is a 3 seperate programs merged into one (mv3DViewer, ShadeD and Multiplex engine) which combines and merges them all into one program I call mV3D.
+This is 3 separate programs merged into one (mv3DViewer, ShadeD and Multiplex engine) that I made and merges and combines them all into one program I call mV3D.
 It's a project that mainly deals with 3D modelling, graphics, shaders etc.
 
 This project is seperate to a similar project called `mVCMD`
