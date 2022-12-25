@@ -18,4 +18,4 @@ Multiplex Engine is created in C++ with Dear ImGUI and GLFW. You can also import
 
 ## Preview
 
-![](imgs/tetsd.jpg)
+![mV3D](imgs/tetsd.jpg)
