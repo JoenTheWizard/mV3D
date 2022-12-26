@@ -17,5 +17,6 @@ background and load textures from external sources. It is also able to set the s
 Multiplex Engine is created in C++ with Dear ImGUI and GLFW. You can also import basic wavefront 3D models, and also edit the shaders of the models with a real-time GLSL editor. It also provides joystick compatibility and a Lua scripting engine
 
 ## Preview
-mV3DViewer (left), ShadeD (middle), Multiplex Engine (right)
+mV3DViewer (left), Multiplex Engine (middle), ShadeD (right)
+
 ![mV3D](imgs/tetsd.PNG)
