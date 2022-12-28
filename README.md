@@ -14,7 +14,7 @@ ShadeD is also made with C# WPF and runs GLSL shader code under WebGL interface 
 background and load textures from external sources. It is also able to set the shaders as wallpapers using Win32 API (although not recommended as it can be heavy on the GPU). I made a repository containing all the shaders I've written under ShadeD [here](https://github.com/JoenTheWizard/Raymarching-Stuff)
 
 ## Multiplex Engine
-Multiplex Engine is created in C++ with Dear ImGUI and GLFW and to launch it you would need to type in `multiplex` within the mV3DViewer console. You can also import basic wavefront 3D models, and also edit the shaders of the models with a real-time GLSL editor. It also provides joystick compatibility and a Lua scripting engine. Note that the Lua scripting engine includes all the standard libararies including the OS facilities standard lib (meaning it includes functions such as `os.execute()` which can be considered dangerous).
+Multiplex Engine is created in C++ with Dear ImGUI and GLFW and to launch it you would need to type in `multiplex` within the mV3DViewer console. You can also import basic wavefront 3D models, and also edit the shaders of the models with a real-time GLSL editor. It also provides joystick compatibility and a Lua scripting engine (Note that the Lua scripting engine includes all the standard libararies).
 
 ## Preview
 mV3DViewer (left), Multiplex Engine (middle), ShadeD (right)
