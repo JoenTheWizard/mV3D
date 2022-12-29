@@ -3,7 +3,7 @@
 This is 3 separate programs merged into one (mv3DViewer, ShadeD and Multiplex engine) that I made and merges and combines them all into one program I call mV3D.
 It's a project that mainly deals with 3D modelling, graphics, shaders etc. A lot of this project is unfinished.
 
-This project is seperate to a similar project called `mVCMD`
+This project is separate to a similar project called `mVCMD`
 
 ## mV3DViewer
 mV3DViewer is the, base program, created in C# WPF (and utilizes HelixToolKit library) that loads basic wavefront 3D models and is able to create very simple geometric models. It has simple cloth physics as well, cutting objects (based on normal vectors), 3D mathematical expression modelling tool and
