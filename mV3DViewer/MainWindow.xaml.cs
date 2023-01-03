@@ -327,8 +327,8 @@ namespace mV3DViewer
                                 {
                                     //a.Normal = new Vector3D(0,10,0);
                                     //a.Normal = new Vector3D(1,0,-0.5);
-                                    history.Add(command[1])
-;                                    List<Plane3D> planes = new List<Plane3D>();
+                                    history.Add(command[1]);
+                                    List<Plane3D> planes = new List<Plane3D>();
                                     for (int i = 2; i < args.Length; i++)
                                     {
                                         Plane3D a = new Plane3D();
